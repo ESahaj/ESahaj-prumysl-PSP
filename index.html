@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Svět chemie a bezpečnost – školní kvíz</title>
+  <style>
+    :root {
+      --bg: #fff7d6;
+      --panel: #ffffff;
+      --text: #242424;
+      --muted: #666666;
+      --primary: #ffea00;
+      --accent: #ff2f2f;
+      --accent-dark: #c91414;
+      --ok: #1f9d55;
+      --bad: #d93025;
+      --shadow: 0 18px 45px rgba(120, 45, 0, 0.18);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 47, 47, 0.18), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(255, 234, 0, 0.5), transparent 28rem),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255, 47, 47, 0.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px clamp(18px, 4vw, 34px);
+      background: linear-gradient(135deg, var(--primary), #fff6a3);
+      border-bottom: 3px solid rgba(255, 47, 47, 0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 64px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .logo svg { width: 45px; height: 45px; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.35rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin: 5px 0 0;
+      color: #5f3200;
+      font-weight: 650;
+      font-size: clamp(0.9rem, 1.8vw, 1rem);
+    }
+
+    .scorebar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(201, 20, 20, 0.2);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      padding: clamp(18px, 4vw, 36px);
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: fade 220ms ease; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .intro, .result-card, .question-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+    }
+
+    .intro h2, .result-card h2 {
+      margin-top: 0;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    }
+
+    .intro p, .result-card p {
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.55;
+    }
+
+    select, button {
+      font: inherit;
+    }
+
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 47, 47, 0.22);
+      background: #fff;
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 900;
+      transition: transform 130ms ease, filter 130ms ease, box-shadow 130ms ease;
+      box-shadow: 0 10px 18px rgba(201, 20, 20, 0.18);
+    }
+
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.02); }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #ffe66d;
+      color: #491b00;
+      box-shadow: none;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .progress {
+      height: 12px;
+      background: #ffe8e8;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 0 0 24px;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #ff9c00);
+      border-radius: inherit;
+      transition: width 260ms ease;
+    }
+
+    .question {
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      margin: 0 0 22px;
+      line-height: 1.25;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .answer {
+      min-height: 76px;
+      text-align: left;
+      border: 2px solid rgba(0, 0, 0, 0.08);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--text);
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .answer:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: #fffdf0;
+    }
+
+    .answer:disabled { cursor: not-allowed; }
+    .answer.correct { border-color: var(--ok); background: #e9f8ef; }
+    .answer.wrong { border-color: var(--bad); background: #fdecea; }
+
+    .feedback {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f7f7f7;
+      display: none;
+      line-height: 1.5;
+      font-weight: 650;
+    }
+
+    .feedback.show { display: block; }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .stat {
+      background: #fff8cf;
+      border: 2px solid rgba(255, 47, 47, 0.18);
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      color: var(--accent-dark);
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: #6c3a00;
+      font-weight: 900;
+    }
+
+    .review {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .review-item {
+      border-left: 6px solid #ddd;
+      background: #fafafa;
+      border-radius: 14px;
+      padding: 13px 14px;
+      line-height: 1.4;
+    }
+
+    .review-item.good { border-left-color: var(--ok); }
+    .review-item.bad { border-left-color: var(--bad); }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.93rem;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .scorebar { justify-content: flex-start; }
+      .answers, .settings, .result-grid { grid-template-columns: 1fr; }
+      .answer { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 100 100" role="img">
+            <polygon points="56 5 22 57 48 48 44 95 78 38 52 48" fill="#ff2f2f"></polygon>
+          </svg>
+        </div>
+        <div>
+          <h1>Svět chemie a bezpečnost</h1>
+          <p class="subtitle">Chemický průmysl v ČR</p>
+        </div>
+      </div>
+      <div class="scorebar" aria-label="Stav hry">
+        <div class="pill">Otázka: <span id="roundNow">0</span>/10</div>
+        <div class="pill">Energie: <span id="lightnings">0</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="startScreen" class="screen active">
+        <div class="intro">
+          <h2>Pravidla</h2>
+          <p>Hra náhodně vybere 10 otázek z balíčku. Za každou správnou odpověď získáš 1 energii. Na konci uvidíš počet správných odpovědí, množství energie a přehled kola.</p>
+
+          <button class="btn btn-primary" id="startBtn">Spustit hru</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen">
+        <div class="question-card">
+          <div class="topline">            <span id="scoreLabel">Správně: 0</span>
+          </div>
+          <div class="progress" aria-label="Průběh kola"><div id="progressBar"></div></div>
+          <h2 id="questionText" class="question"></h2>
+          <div id="answers" class="answers"></div>
+          <div id="feedback" class="feedback"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" id="nextBtn" hidden>Další otázka</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="resultScreen" class="screen">
+        <div class="result-card">
+          <h2>Výsledek kola</h2>
+          <p id="resultMessage"></p>
+          <div class="result-grid">
+            <div class="stat"><strong id="finalScore">0/10</strong><span>správných odpovědí</span></div>
+            <div class="stat"><strong id="finalLightnings">0</strong><span>získané energie</span></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" id="showReviewBtn">Zobrazit přehled</button>
+            <button class="btn btn-primary" id="restartBtn">Hrát znovu</button>
+          </div>
+          <div id="review" class="review" hidden></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const questionBank = [
+      {
+        question: "Který český chemik získal Nobelovu cenu za objev polarografie?",
+        answers: ["Jaroslav Heyrovský", "Otto Wichterle", "Antonín Holý", "František Šorm"],
+        correct: 0,
+        explanation: "Jaroslav Heyrovský získal Nobelovu cenu za chemii za objev a rozvoj polarografické metody."
+      },
+      {
+        question: "Jak se nazývá skleněná nádoba používaná alchymisty při destilaci?",
+        answers: ["Retorta", "Byreta", "Exsikátor", "Kádinka"],
+        correct: 0,
+        explanation: "Retorta je zahnutá skleněná nádoba, která se dříve používala mimo jiné při destilaci."
+      },
+      {
+        question: "Jaký je správný postup při ředění kyseliny vodou?",
+        answers: ["Kyselina se pomalu vlévá do vody", "Voda se vlévá do kyseliny", "Obě kapaliny se nalijí současně", "Na pořadí nezáleží"],
+        correct: 0,
+        explanation: "Platí pravidlo: kyselinu lijeme do vody, nikdy ne vodu do kyseliny."
+      },
+      {
+        question: "Jak bychom mohli bezpečně zlikvidovat rozlitou rtuť?",
+        answers: ["Posypat sírou a sebrat podle pokynů učitele", "Vysát vysavačem", "Spláchnout do odpadu", "Setřít holou rukou"],
+        correct: 0,
+        explanation: "Rtuť je toxická. V laboratoři se postupuje podle bezpečnostních pokynů, často se používá síra a odborný sběr."
+      },
+      {
+        question: "Jak se nazývá směs dvou kyselin, která rozpouští i zlato?",
+        answers: ["Luční voda", "Královská voda", "Tvrdá voda", "Vápenná voda"],
+        correct: 1,
+        explanation: "Královská voda je směs koncentrované kyseliny chlorovodíkové a dusičné."
+      },
+      {
+        question: "Na která dvě japonská města byly v závěru druhé světové války svrženy atomové bomby?",
+        answers: ["Hirošima a Nagasaki", "Tokio a Kjóto", "Ósaka a Sapporo", "Nara a Jokohama"],
+        correct: 0,
+        explanation: "Atomové bomby byly svrženy na Hirošimu a Nagasaki."
+      },
+      {
+        question: "K čemu slouží Kemlerův a UN kód?",
+        answers: ["K označování nebezpečných látek při přepravě", "K měření teploty varu", "K výpočtu pH", "K pojmenování minerálů"],
+        correct: 0,
+        explanation: "Tyto kódy pomáhají identifikovat nebezpečí a konkrétní látku při přepravě."
+      },
+      {
+        question: "Který kov roztaje pouhým držením v ruce?",
+        answers: ["Gallium", "Železo", "Měď", "Hliník"],
+        correct: 0,
+        explanation: "Gallium má teplotu tání přibližně 30 °C, takže může tát v teplé dlani."
+      },
+      {
+        question: "K čemu slouží byreta?",
+        answers: ["K přesnému odměřování objemu při titraci", "K drcení pevných látek", "K ohřívání nad plamenem", "K filtrování vzduchu"],
+        correct: 0,
+        explanation: "Byreta umožňuje velmi přesné dávkování kapaliny, například při titraci."
+      },
+      {
+        question: "Jaká hodnota pH odpovídá neutrálnímu roztoku při běžné školní aproximaci?",
+        answers: ["7", "0", "14", "1"],
+        correct: 0,
+        explanation: "Neutrální roztok má ve školním pojetí pH přibližně 7."
+      },
+      {
+        question: "Kdo je považován za autora periodické tabulky prvků?",
+        answers: ["Dmitrij Ivanovič Mendělejev", "Albert Einstein", "Marie Curie-Skłodowská", "Isaac Newton"],
+        correct: 0,
+        explanation: "Dmitrij Ivanovič Mendělejev sestavil jednu z prvních periodických tabulek prvků."
+      },
+      {
+        question: "Co uděláš jako první, když se v laboratoři stane nehoda?",
+        answers: ["Okamžitě upozorním učitele", "Budu to tajit", "Začnu uklízet bez ochrany", "Odejdu ze třídy"],
+        correct: 0,
+        explanation: "Při nehodě je nejdůležitější ihned informovat učitele nebo odpovědnou osobu."
+      }
+    ];
+
+    const elements = [
+      { symbol: "H", name: "vodík" },
+      { symbol: "He", name: "helium" },
+      { symbol: "Li", name: "lithium" },
+      { symbol: "Be", name: "beryllium" },
+      { symbol: "B", name: "bor" },
+      { symbol: "C", name: "uhlík" },
+      { symbol: "N", name: "dusík" },
+      { symbol: "O", name: "kyslík" },
+      { symbol: "F", name: "fluor" },
+      { symbol: "Ne", name: "neon" },
+      { symbol: "Na", name: "sodík" },
+      { symbol: "Mg", name: "hořčík" },
+      { symbol: "Al", name: "hliník" },
+      { symbol: "Si", name: "křemík" },
+      { symbol: "P", name: "fosfor" },
+      { symbol: "S", name: "síra" },
+      { symbol: "Cl", name: "chlor" },
+      { symbol: "Ar", name: "argon" },
+      { symbol: "K", name: "draslík" },
+      { symbol: "Ca", name: "vápník" },
+      { symbol: "Sc", name: "skandium" },
+      { symbol: "Ti", name: "titan" },
+      { symbol: "V", name: "vanad" },
+      { symbol: "Cr", name: "chrom" },
+      { symbol: "Mn", name: "mangan" },
+      { symbol: "Fe", name: "železo" },
+      { symbol: "Co", name: "kobalt" },
+      { symbol: "Ni", name: "nikl" },
+      { symbol: "Cu", name: "měď" },
+      { symbol: "Zn", name: "zinek" },
+      { symbol: "Ga", name: "gallium" },
+      { symbol: "Ge", name: "germanium" },
+      { symbol: "As", name: "arsen" },
+      { symbol: "Se", name: "selen" },
+      { symbol: "Br", name: "brom" },
+      { symbol: "Kr", name: "krypton" },
+      { symbol: "Rb", name: "rubidium" },
+      { symbol: "Sr", name: "stroncium" },
+      { symbol: "Y", name: "yttrium" },
+      { symbol: "Zr", name: "zirkonium" },
+      { symbol: "Nb", name: "niob" },
+      { symbol: "Mo", name: "molybden" },
+      { symbol: "Tc", name: "technecium" },
+      { symbol: "Ru", name: "ruthenium" },
+      { symbol: "Rh", name: "rhodium" },
+      { symbol: "Pd", name: "palladium" },
+      { symbol: "Ag", name: "stříbro" },
+      { symbol: "Cd", name: "kadmium" },
+      { symbol: "In", name: "indium" },
+      { symbol: "Sn", name: "cín" },
+      { symbol: "Sb", name: "antimon" },
+      { symbol: "Te", name: "tellur" },
+      { symbol: "I", name: "jod" },
+      { symbol: "Xe", name: "xenon" },
+      { symbol: "Cs", name: "cesium" },
+      { symbol: "Ba", name: "baryum" },
+      { symbol: "Hf", name: "hafnium" },
+      { symbol: "Ta", name: "tantal" },
+      { symbol: "W", name: "wolfram" },
+      { symbol: "Re", name: "rhenium" },
+      { symbol: "Os", name: "osmium" },
+      { symbol: "Ir", name: "iridium" },
+      { symbol: "Pt", name: "platina" },
+      { symbol: "Au", name: "zlato" },
+      { symbol: "Hg", name: "rtuť" },
+      { symbol: "Tl", name: "thallium" },
+      { symbol: "Pb", name: "olovo" },
+      { symbol: "Bi", name: "bismut" },
+      { symbol: "Po", name: "polonium" },
+      { symbol: "At", name: "astat" },
+      { symbol: "Rn", name: "radon" },
+      { symbol: "Fr", name: "francium" },
+      { symbol: "Ra", name: "radium" },
+      { symbol: "Rf", name: "rutherfordium" },
+      { symbol: "Db", name: "dubnium" },
+      { symbol: "Sg", name: "seaborgium" },
+      { symbol: "Bh", name: "bohrium" },
+      { symbol: "Hs", name: "hassium" },
+      { symbol: "Mt", name: "meitnerium" },
+      { symbol: "Ds", name: "darmstadtium" },
+      { symbol: "Rg", name: "roentgenium" },
+      { symbol: "Cn", name: "kopernicium" },
+      { symbol: "Nh", name: "nihonium" },
+      { symbol: "Fl", name: "flerovium" },
+      { symbol: "Mc", name: "moscovium" },
+      { symbol: "Lv", name: "livermorium" },
+      { symbol: "Ts", name: "tennessin" },
+      { symbol: "Og", name: "oganesson" }
+    ];
+
+    function makeOptions(correct, allOptions) {
+      const wrongOptions = allOptions
+        .filter(option => option !== correct)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+
+      return [correct, ...wrongOptions].sort(() => Math.random() - 0.5);
+    }
+
+    function createElementQuestion(element, direction) {
+      if (direction === "nameToSymbol") {
+        const symbolOptions = makeOptions(
+          element.symbol,
+          elements.map(item => item.symbol)
+        );
+
+        return {
+          question: `Jakou chemickou značku má prvek ${element.name}?`,
+          answers: symbolOptions,
+          correct: symbolOptions.indexOf(element.symbol),
+          explanation: `Prvek ${element.name} má chemickou značku ${element.symbol}.`
+        };
+      }
+
+      const nameOptions = makeOptions(
+        element.name,
+        elements.map(item => item.name)
+      );
+
+      return {
+        question: `Jaký název má chemická značka ${element.symbol}?`,
+        answers: nameOptions,
+        correct: nameOptions.indexOf(element.name),
+        explanation: `Chemická značka ${element.symbol} patří prvku ${element.name}.`
+      };
+    }
+
+    function createElementRound() {
+      const shuffledElements = shuffle(elements);
+      const nameToSymbol = shuffledElements
+        .slice(0, 5)
+        .map(element => createElementQuestion(element, "nameToSymbol"));
+
+      const symbolToName = shuffledElements
+        .slice(5, 10)
+        .map(element => createElementQuestion(element, "symbolToName"));
+
+      return shuffle([...nameToSymbol, ...symbolToName]);
+    }
+
+    const state = {
+      round: [],
+      current: 0,
+      score: 0,
+      lightnings: 0,
+      answered: false,
+      history: []
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    const screens = {
+      start: $("startScreen"),
+      game: $("gameScreen"),
+      result: $("resultScreen")
+    };
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function startGame() {
+      state.round = createElementRound();
+      state.current = 0;
+      state.score = 0;
+      state.lightnings = 0;
+      state.answered = false;
+      state.history = [];
+
+      updateHeader();
+      showScreen("game");
+      renderQuestion();
+    }
+
+    function updateHeader() {
+      $("roundNow").textContent = Math.min(state.current + 1, state.round.length || 0);
+      $("lightnings").textContent = state.lightnings;
+      $("scoreLabel").textContent = `Správně: ${state.score}`;
+      const progress = state.round.length ? (state.current / state.round.length) * 100 : 0;
+      $("progressBar").style.width = `${progress}%`;
+    }
+
+    function renderQuestion() {
+      const q = state.round[state.current];
+      state.answered = false;      $("questionText").textContent = q.question;
+      $("feedback").className = "feedback";
+      $("feedback").textContent = "";
+      $("nextBtn").hidden = true;
+      $("answers").innerHTML = "";
+      updateHeader();
+
+      const mappedAnswers = q.answers.map((text, originalIndex) => ({ text, originalIndex }));
+      shuffle(mappedAnswers).forEach((answer, visibleIndex) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.innerHTML = `<span aria-hidden="true">${String.fromCharCode(65 + visibleIndex)}.</span> ${answer.text}`;
+        button.addEventListener("click", () => chooseAnswer(button, answer.originalIndex));
+        $("answers").appendChild(button);
+      });
+    }
+
+    function chooseAnswer(button, selectedIndex) {
+      if (state.answered) return;
+      state.answered = true;
+
+      const q = state.round[state.current];
+      const isCorrect = selectedIndex === q.correct;
+      const buttons = [...document.querySelectorAll(".answer")];
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        const text = btn.textContent.replace(/^[A-D]\.\s*/, "").trim();
+        const originalIndex = q.answers.indexOf(text);
+        if (originalIndex === q.correct) btn.classList.add("correct");
+      });
+
+      if (isCorrect) {
+        state.score += 1;
+        state.lightnings += 1;
+        button.classList.add("correct");
+        $("feedback").innerHTML = `✅ Správně! Získáváš energii.<br><span class="small">${q.explanation}</span>`;
+      } else {
+        button.classList.add("wrong");
+        $("feedback").innerHTML = `❌ To není správně. Správná odpověď: <strong>${q.answers[q.correct]}</strong>.<br><span class="small">${q.explanation}</span>`;
+      }
+
+      state.history.push({
+        question: q.question,
+        selected: q.answers[selectedIndex],
+        correct: q.answers[q.correct],
+        isCorrect
+      });
+
+      $("feedback").classList.add("show");
+      $("nextBtn").hidden = false;
+      updateHeader();
+    }
+
+    function nextQuestion() {
+      state.current += 1;
+      if (state.current >= state.round.length) {
+        showResults();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function showResults() {
+      $("roundNow").textContent = state.round.length;
+      $("progressBar").style.width = "100%";
+      showScreen("result");
+
+      const total = state.round.length;
+      const percent = Math.round((state.score / total) * 100);
+      $("finalScore").textContent = `${state.score}/${total}`;
+      $("finalLightnings").textContent = state.lightnings;
+
+      let message = "Dobrá práce!";
+      if (percent === 100) message = "Perfektní výsledek! Máš maximum energie.";
+      else if (percent >= 80) message = "Výborně! Většinu otázek máš správně.";
+      else if (percent >= 50) message = "Slušný výkon. Ještě pár pokusů a bude to skvělé.";
+      else message = "Nevadí, zkus další kolo a nasbírej více energie.";
+
+      $("resultMessage").textContent = message;
+      renderReview();
+    }
+
+    function renderReview() {
+      const review = $("review");
+      review.innerHTML = "";
+      state.history.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = `review-item ${item.isCorrect ? "good" : "bad"}`;
+        div.innerHTML = `
+          <strong>${index + 1}. ${item.question}</strong>
+          <div class="small">Tvoje odpověď: ${item.selected}</div>
+          <div class="small">Správně: ${item.correct}</div>
+        `;
+        review.appendChild(div);
+      });
+    }
+
+    $("startBtn").addEventListener("click", startGame);
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("restartBtn").addEventListener("click", () => {
+      $("review").hidden = true;
+      $("showReviewBtn").textContent = "Zobrazit přehled";
+      showScreen("start");
+      $("roundNow").textContent = "0";
+      $("lightnings").textContent = "0";
+    });
+    $("showReviewBtn").addEventListener("click", () => {
+      const review = $("review");
+      review.hidden = !review.hidden;
+      $("showReviewBtn").textContent = review.hidden ? "Zobrazit přehled" : "Skrýt přehled";
+    });
+  </script>
+</body>
+</html>
