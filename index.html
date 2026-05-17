@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Svět chemie a bezpečnost – školní kvíz</title>
+  <title>PSP – značky a názvy prvků – školní kvíz</title>
   <style>
     :root {
       --bg: #fff7d6;
@@ -328,8 +328,8 @@
           </svg>
         </div>
         <div>
-          <h1>Svět chemie a bezpečnost</h1>
-          <p class="subtitle">Chemický průmysl v ČR</p>
+          <h1>PSP – značky a názvy prvků</h1>
+          <p class="subtitle">Procvičování chemických značek a názvů prvků</p>
         </div>
       </div>
       <div class="scorebar" aria-label="Stav hry">
@@ -342,7 +342,7 @@
       <section id="startScreen" class="screen active">
         <div class="intro">
           <h2>Pravidla</h2>
-          <p>Hra náhodně vybere 10 otázek z balíčku. Za každou správnou odpověď získáš 1 energii. Na konci uvidíš počet správných odpovědí, množství energie a přehled kola.</p>
+          <p>Hra náhodně vybere 10 otázek pouze ze značek a názvů chemických prvků. Kolo je vždy půl na půl: 5× určíš chemickou značku podle názvu prvku a 5× určíš název prvku podle chemické značky. Za každou správnou odpověď získáš 1 energii.</p>
 
           <button class="btn btn-primary" id="startBtn">Spustit hru</button>
         </div>
@@ -350,7 +350,8 @@
 
       <section id="gameScreen" class="screen">
         <div class="question-card">
-          <div class="topline">            <span id="scoreLabel">Správně: 0</span>
+          <div class="topline">
+            <span id="scoreLabel">Správně: 0</span>
           </div>
           <div class="progress" aria-label="Průběh kola"><div id="progressBar"></div></div>
           <h2 id="questionText" class="question"></h2>
@@ -381,81 +382,6 @@
   </div>
 
   <script>
-    const questionBank = [
-      {
-        question: "Který český chemik získal Nobelovu cenu za objev polarografie?",
-        answers: ["Jaroslav Heyrovský", "Otto Wichterle", "Antonín Holý", "František Šorm"],
-        correct: 0,
-        explanation: "Jaroslav Heyrovský získal Nobelovu cenu za chemii za objev a rozvoj polarografické metody."
-      },
-      {
-        question: "Jak se nazývá skleněná nádoba používaná alchymisty při destilaci?",
-        answers: ["Retorta", "Byreta", "Exsikátor", "Kádinka"],
-        correct: 0,
-        explanation: "Retorta je zahnutá skleněná nádoba, která se dříve používala mimo jiné při destilaci."
-      },
-      {
-        question: "Jaký je správný postup při ředění kyseliny vodou?",
-        answers: ["Kyselina se pomalu vlévá do vody", "Voda se vlévá do kyseliny", "Obě kapaliny se nalijí současně", "Na pořadí nezáleží"],
-        correct: 0,
-        explanation: "Platí pravidlo: kyselinu lijeme do vody, nikdy ne vodu do kyseliny."
-      },
-      {
-        question: "Jak bychom mohli bezpečně zlikvidovat rozlitou rtuť?",
-        answers: ["Posypat sírou a sebrat podle pokynů učitele", "Vysát vysavačem", "Spláchnout do odpadu", "Setřít holou rukou"],
-        correct: 0,
-        explanation: "Rtuť je toxická. V laboratoři se postupuje podle bezpečnostních pokynů, často se používá síra a odborný sběr."
-      },
-      {
-        question: "Jak se nazývá směs dvou kyselin, která rozpouští i zlato?",
-        answers: ["Luční voda", "Královská voda", "Tvrdá voda", "Vápenná voda"],
-        correct: 1,
-        explanation: "Královská voda je směs koncentrované kyseliny chlorovodíkové a dusičné."
-      },
-      {
-        question: "Na která dvě japonská města byly v závěru druhé světové války svrženy atomové bomby?",
-        answers: ["Hirošima a Nagasaki", "Tokio a Kjóto", "Ósaka a Sapporo", "Nara a Jokohama"],
-        correct: 0,
-        explanation: "Atomové bomby byly svrženy na Hirošimu a Nagasaki."
-      },
-      {
-        question: "K čemu slouží Kemlerův a UN kód?",
-        answers: ["K označování nebezpečných látek při přepravě", "K měření teploty varu", "K výpočtu pH", "K pojmenování minerálů"],
-        correct: 0,
-        explanation: "Tyto kódy pomáhají identifikovat nebezpečí a konkrétní látku při přepravě."
-      },
-      {
-        question: "Který kov roztaje pouhým držením v ruce?",
-        answers: ["Gallium", "Železo", "Měď", "Hliník"],
-        correct: 0,
-        explanation: "Gallium má teplotu tání přibližně 30 °C, takže může tát v teplé dlani."
-      },
-      {
-        question: "K čemu slouží byreta?",
-        answers: ["K přesnému odměřování objemu při titraci", "K drcení pevných látek", "K ohřívání nad plamenem", "K filtrování vzduchu"],
-        correct: 0,
-        explanation: "Byreta umožňuje velmi přesné dávkování kapaliny, například při titraci."
-      },
-      {
-        question: "Jaká hodnota pH odpovídá neutrálnímu roztoku při běžné školní aproximaci?",
-        answers: ["7", "0", "14", "1"],
-        correct: 0,
-        explanation: "Neutrální roztok má ve školním pojetí pH přibližně 7."
-      },
-      {
-        question: "Kdo je považován za autora periodické tabulky prvků?",
-        answers: ["Dmitrij Ivanovič Mendělejev", "Albert Einstein", "Marie Curie-Skłodowská", "Isaac Newton"],
-        correct: 0,
-        explanation: "Dmitrij Ivanovič Mendělejev sestavil jednu z prvních periodických tabulek prvků."
-      },
-      {
-        question: "Co uděláš jako první, když se v laboratoři stane nehoda?",
-        answers: ["Okamžitě upozorním učitele", "Budu to tajit", "Začnu uklízet bez ochrany", "Odejdu ze třídy"],
-        correct: 0,
-        explanation: "Při nehodě je nejdůležitější ihned informovat učitele nebo odpovědnou osobu."
-      }
-    ];
-
     const elements = [
       { symbol: "H", name: "vodík" },
       { symbol: "He", name: "helium" },
@@ -584,14 +510,19 @@
       };
     }
 
+    const QUESTIONS_PER_ROUND = 10;
+    const NAME_TO_SYMBOL_COUNT = QUESTIONS_PER_ROUND / 2;
+    const SYMBOL_TO_NAME_COUNT = QUESTIONS_PER_ROUND / 2;
+
     function createElementRound() {
       const shuffledElements = shuffle(elements);
+
       const nameToSymbol = shuffledElements
-        .slice(0, 5)
+        .slice(0, NAME_TO_SYMBOL_COUNT)
         .map(element => createElementQuestion(element, "nameToSymbol"));
 
       const symbolToName = shuffledElements
-        .slice(5, 10)
+        .slice(NAME_TO_SYMBOL_COUNT, NAME_TO_SYMBOL_COUNT + SYMBOL_TO_NAME_COUNT)
         .map(element => createElementQuestion(element, "symbolToName"));
 
       return shuffle([...nameToSymbol, ...symbolToName]);
@@ -646,7 +577,8 @@
 
     function renderQuestion() {
       const q = state.round[state.current];
-      state.answered = false;      $("questionText").textContent = q.question;
+      state.answered = false;
+      $("questionText").textContent = q.question;
       $("feedback").className = "feedback";
       $("feedback").textContent = "";
       $("nextBtn").hidden = true;
